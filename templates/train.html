@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% block content %}
+<h2>Model Training &amp; Evaluation</h2>
+<p class="muted">Random Forest Regressor (200 trees) &middot; trained on {{ m.train_rows }} records, tested on the latest {{ m.test_rows }} records (last 16 weeks)</p>
+<div class="cards">
+<div class="card"><div class="label">R² Score</div><div class="value good">{{ m.r2 }}</div></div>
+<div class="card"><div class="label">MAE (orders)</div><div class="value">{{ m.mae }}</div></div>
+<div class="card"><div class="label">RMSE (orders)</div><div class="value">{{ m.rmse }}</div></div>
+<div class="card"><div class="label">Test Records</div><div class="value">{{ m.test_rows }}</div></div>
+</div>
+<div class="grid2">
+<div class="panel"><b>Actual vs Predicted Weekly Orders (Test Weeks)</b>
+<span class="muted">&nbsp;<span style="color:#1c1917">&#9644;</span> Actual &nbsp;<span style="color:#c2410c">&#9644;</span> Predicted</span>
+{% set allv = weekly|map(attribute=1)|list + weekly|map(attribute=2)|list %}{% set mx = allv|max * 1.1 %}{% set mn = allv|min * 0.85 %}{% set n = weekly|length %}
+<svg viewBox="0 0 520 250" width="100%">
+<line x1="50" y1="210" x2="510" y2="210" stroke="#a8a29e"/><line x1="50" y1="15" x2="50" y2="210" stroke="#a8a29e"/>
+{% for t in [0, 0.5, 1] %}<text x="44" y="{{ 214 - t * 190 }}" font-size="10" text-anchor="end">{{ (mn + (mx - mn) * t)|round|int }}</text>{% endfor %}
+<polyline fill="none" stroke="#1c1917" stroke-width="2.5" points="{% for w in weekly %}{{ 60 + loop.index0 / (n - 1) * 440 }},{{ 210 - (w[1] - mn) / (mx - mn) * 190 }} {% endfor %}"/>
+<polyline fill="none" stroke="#c2410c" stroke-width="2.5" stroke-dasharray="6 4" points="{% for w in weekly %}{{ 60 + loop.index0 / (n - 1) * 440 }},{{ 210 - (w[2] - mn) / (mx - mn) * 190 }} {% endfor %}"/>
+{% for w in weekly %}{% if loop.index0 % 3 == 0 %}<text x="{{ 60 + loop.index0 / (n - 1) * 440 }}" y="226" font-size="10" text-anchor="middle">W{{ w[0] }}</text>{% endif %}{% endfor %}
+</svg></div>
+<div class="panel"><b>Feature Importance (%)</b>
+<svg viewBox="0 0 400 250" width="100%">
+{% for f, v in importance %}<text x="120" y="{{ 30 + loop.index0 * 31 }}" font-size="12" text-anchor="end">{{ f }}</text>
+<rect x="128" y="{{ 18 + loop.index0 * 31 }}" width="{{ v / importance[0][1] * 210 }}" height="17" fill="#c2410c" rx="3"/>
+<text x="{{ 134 + v / importance[0][1] * 210 }}" y="{{ 31 + loop.index0 * 31 }}" font-size="11">{{ v }}</text>{% endfor %}
+</svg></div></div>
+{% endblock %}

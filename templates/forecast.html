@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block content %}
+<h2>8-Week Demand Forecast</h2>
+<p class="muted">Forecast at regular price with no promotion &middot; Random Forest model trained on all available weeks</p>
+<table><tr><th>Meal</th>{% for w in weeks %}<th>W{{ w }}</th>{% endfor %}<th>Total</th></tr>
+{% for t in table %}<tr><td>{{ t.meal }}</td>{% for v in t.weekly %}<td>{{ v }}</td>{% endfor %}<td><b>{{ t.total }}</b></td></tr>{% endfor %}
+<tr style="background:#fff7ed"><td><b>All Meals</b></td>{% for v in totals %}<td><b>{{ v }}</b></td>{% endfor %}<td><b>{{ totals|sum }}</b></td></tr>
+</table>
+<div class="panel" style="margin-top:18px"><b>Forecast Total Orders per Week</b>
+{% set mx = totals|max %}
+<svg viewBox="0 0 1000 200" width="100%">
+<line x1="40" y1="170" x2="980" y2="170" stroke="#a8a29e"/>
+{% for v in totals %}<rect x="{{ 70 + loop.index0 * 114 }}" y="{{ 170 - v / mx * 140 }}" width="70" height="{{ v / mx * 140 }}" fill="#f59e0b" rx="4"/>
+<text x="{{ 105 + loop.index0 * 114 }}" y="{{ 163 - v / mx * 140 }}" font-size="13" text-anchor="middle" font-weight="700">{{ v }}</text>
+<text x="{{ 105 + loop.index0 * 114 }}" y="188" font-size="12" text-anchor="middle">W{{ weeks[loop.index0] }}</text>{% endfor %}
+</svg></div>
+{% endblock %}

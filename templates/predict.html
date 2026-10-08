@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block content %}
+<h2>Predict Meal Demand</h2>
+<form method="post"><div class="fgrid">
+<label>Week Number<input name="week" value="{{ form.get('week', '') }}" required></label>
+<label>Meal<select name="meal">{% for m in meals %}<option {{ 'selected' if form.get('meal') == m }}>{{ m }}</option>{% endfor %}</select></label>
+<label>Base Price (&#8377;)<input name="base_price" value="{{ form.get('base_price', '') }}" required></label>
+<label>Checkout Price (&#8377;)<input name="checkout_price" value="{{ form.get('checkout_price', '') }}" required></label>
+<label>Email Promotion<span><input type="checkbox" name="email_promo" {{ 'checked' if form.get('email_promo') }}> Yes</span></label>
+<label>Featured on Homepage<span><input type="checkbox" name="featured" {{ 'checked' if form.get('featured') }}> Yes</span></label>
+</div><button class="btn" type="submit">Predict Orders</button></form>
+{% if result is not none %}<div class="result" style="margin-top:18px">
+<div class="muted">Predicted number of orders for {{ form.meal }} in week {{ form.week }}</div>
+<div style="font-size:34px;font-weight:700;color:#c2410c">{{ result }} orders</div>
+<p>Recommended preparation (with 10% safety stock): <b>{{ (result * 1.1)|round|int }} portions</b></p>
+</div>{% endif %}
+{% endblock %}

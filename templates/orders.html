@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block content %}
+<h2>Weekly Order Data</h2>
+<form class="form" method="post">
+<input name="week" placeholder="Week" size="4" required>
+<select name="meal">{% for m in meals %}<option>{{ m }}</option>{% endfor %}</select>
+<input name="base_price" placeholder="Base Price" size="7" required>
+<input name="checkout_price" placeholder="Checkout Price" size="9" required>
+<input name="num_orders" placeholder="Orders" size="6" required>
+<label class="muted"><input type="checkbox" name="email_promo"> Email Promo</label>
+<label class="muted"><input type="checkbox" name="featured"> Featured</label>
+<button class="btn" type="submit">Add Record</button>
+</form>
+<table><tr><th>Week</th><th>Meal</th><th>Base Price (&#8377;)</th><th>Checkout Price (&#8377;)</th><th>Discount</th><th>Email Promo</th><th>Featured</th><th>Orders</th></tr>
+{% for r in rows %}<tr><td>{{ r.week }}</td><td>{{ r.meal }}</td><td>{{ r.base_price|int }}</td><td>{{ r.checkout_price|int }}</td>
+<td>{% if r.checkout_price < r.base_price %}<span class="tag">{{ ((r.base_price - r.checkout_price) / r.base_price * 100)|round|int }}% off</span>{% else %}-{% endif %}</td>
+<td>{{ "Yes" if r.email_promo else "No" }}</td><td>{{ "Yes" if r.featured else "No" }}</td><td><b>{{ r.num_orders }}</b></td></tr>{% endfor %}
+</table>
+{% endblock %}

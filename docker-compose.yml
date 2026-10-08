@@ -1,0 +1,7 @@
+services:
+  food-demand:
+    build: .
+    container_name: food-demand-prediction
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
